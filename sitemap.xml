@@ -164,13 +164,6 @@
 
   
   <url>
-    <loc>http://fybc.xyz/tags/hexo/</loc>
-    <lastmod>2024-05-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>http://fybc.xyz/tags/%E8%AF%AD%E6%B3%95/</loc>
     <lastmod>2024-05-03</lastmod>
     <changefreq>weekly</changefreq>
@@ -178,7 +171,21 @@
   </url>
   
   <url>
-    <loc>http://fybc.xyz/tags/sql/</loc>
+    <loc>http://fybc.xyz/tags/hexo/</loc>
+    <lastmod>2024-05-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://fybc.xyz/tags/%E5%86%85%E7%BD%91/</loc>
+    <lastmod>2024-05-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://fybc.xyz/tags/%E5%B7%A5%E5%85%B7/</loc>
     <lastmod>2024-05-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -213,14 +220,7 @@
   </url>
   
   <url>
-    <loc>http://fybc.xyz/tags/%E5%86%85%E7%BD%91/</loc>
-    <lastmod>2024-05-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://fybc.xyz/tags/%E5%B7%A5%E5%85%B7/</loc>
+    <loc>http://fybc.xyz/tags/sql/</loc>
     <lastmod>2024-05-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -236,7 +236,7 @@
   </url>
   
   <url>
-    <loc>http://fybc.xyz/categories/web/</loc>
+    <loc>http://fybc.xyz/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/</loc>
     <lastmod>2024-05-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -250,7 +250,7 @@
   </url>
   
   <url>
-    <loc>http://fybc.xyz/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/</loc>
+    <loc>http://fybc.xyz/categories/web/</loc>
     <lastmod>2024-05-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
